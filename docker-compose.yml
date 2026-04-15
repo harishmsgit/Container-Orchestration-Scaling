@@ -6,12 +6,20 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   auth:
     build:
       context: ./backend/authService
+    restart: unless-stopped
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     environment:
       PORT: 3001
       MONGO_URI: mongodb://mongo:27017/${MONGO_DB:-streamingapp}
@@ -28,8 +36,10 @@ services:
     build:
       context: ./backend
       dockerfile: streamingService/Dockerfile
+    restart: unless-stopped
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     environment:
       PORT: 3002
       MONGO_URI: mongodb://mongo:27017/${MONGO_DB:-streamingapp}
@@ -48,8 +58,10 @@ services:
     build:
       context: ./backend
       dockerfile: adminService/Dockerfile
+    restart: unless-stopped
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     environment:
       PORT: 3003
       MONGO_URI: mongodb://mongo:27017/${MONGO_DB:-streamingapp}
@@ -67,8 +79,10 @@ services:
     build:
       context: ./backend
       dockerfile: chatService/Dockerfile
+    restart: unless-stopped
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     environment:
       PORT: 3004
       MONGO_URI: mongodb://mongo:27017/${MONGO_DB:-streamingapp}
@@ -87,6 +101,7 @@ services:
         REACT_APP_ADMIN_API_URL: ${REACT_APP_ADMIN_API_URL:-http://localhost:3003/api/admin}
         REACT_APP_CHAT_API_URL: ${REACT_APP_CHAT_API_URL:-http://localhost:3004/api/chat}
         REACT_APP_CHAT_SOCKET_URL: ${REACT_APP_CHAT_SOCKET_URL:-http://localhost:3004}
+    restart: unless-stopped
     depends_on:
       - auth
       - streaming
