@@ -1,0 +1,102 @@
+{
+    "repositories": [
+        {
+            "repositoryArn": "arn:aws:ecr:ap-south-1:173554685967:repository/streamingapp-ui",
+            "registryId": "173554685967",
+            "repositoryName": "streamingapp-ui",
+            "repositoryUri": "173554685967.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-ui",
+            "createdAt": "2026-04-23T19:36:27.995000+00:00",
+            "imageTagMutability": "MUTABLE",
+            "imageScanningConfiguration": {
+                "scanOnPush": false
+            },
+            "encryptionConfiguration": {
+                "encryptionType": "AES256"
+            }
+        },
+        {
+            "repositoryArn": "arn:aws:ecr:ap-south-1:173554685967:repository/streamingapp-streaming",
+            "registryId": "173554685967",
+            "repositoryName": "streamingapp-streaming",
+            "repositoryUri": "173554685967.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-streaming",
+            "createdAt": "2026-04-23T19:45:18.439000+00:00",
+            "imageTagMutability": "MUTABLE",
+            "imageScanningConfiguration": {
+                "scanOnPush": false
+            },
+            "encryptionConfiguration": {
+                "encryptionType": "AES256"
+            }
+        },
+        {
+            "repositoryArn": "arn:aws:ecr:ap-south-1:173554685967:repository/cicd-lab-app",
+            "registryId": "173554685967",
+            "repositoryName": "cicd-lab-app",
+            "repositoryUri": "173554685967.dkr.ecr.ap-south-1.amazonaws.com/cicd-lab-app",
+            "createdAt": "2026-03-22T02:26:10.442000+00:00",
+            "imageTagMutability": "MUTABLE",
+            "imageScanningConfiguration": {
+                "scanOnPush": false
+            },
+            "encryptionConfiguration": {
+                "encryptionType": "AES256"
+            }
+        },
+        {
+            "repositoryArn": "arn:aws:ecr:ap-south-1:173554685967:repository/cicd-labs",
+            "registryId": "173554685967",
+            "repositoryName": "cicd-labs",
+            "repositoryUri": "173554685967.dkr.ecr.ap-south-1.amazonaws.com/cicd-labs",
+            "createdAt": "2026-04-10T05:56:32.686000+00:00",
+            "imageTagMutability": "MUTABLE",
+            "imageScanningConfiguration": {
+                "scanOnPush": false
+            },
+            "encryptionConfiguration": {
+                "encryptionType": "AES256"
+            }
+        },
+        {
+            "repositoryArn": "arn:aws:ecr:ap-south-1:173554685967:repository/streamingapp-api",
+            "registryId": "173554685967",
+            "repositoryName": "streamingapp-api",
+            "repositoryUri": "173554685967.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-api",
+            "createdAt": "2026-04-23T19:42:37.876000+00:00",
+            "imageTagMutability": "MUTABLE",
+            "imageScanningConfiguration": {
+                "scanOnPush": false
+            },
+            "encryptionConfiguration": {
+                "encryptionType": "AES256"
+            }
+        },
+        {
+            "repositoryArn": "arn:aws:ecr:ap-south-1:173554685967:repository/streamingapp-chat",
+            "registryId": "173554685967",
+            "repositoryName": "streamingapp-chat",
+            "repositoryUri": "173554685967.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-chat",
+            "createdAt": "2026-04-23T19:45:15.782000+00:00",
+            "imageTagMutability": "MUTABLE",
+            "imageScanningConfiguration": {
+                "scanOnPush": false
+            },
+            "encryptionConfiguration": {
+                "encryptionType": "AES256"
+            }
+        },
+        {
+            "repositoryArn": "arn:aws:ecr:ap-south-1:173554685967:repository/streamingapp-admin",
+            "registryId": "173554685967",
+            "repositoryName": "streamingapp-admin",
+            "repositoryUri": "173554685967.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-admin",
+            "createdAt": "2026-04-23T19:45:17.196000+00:00",
+            "imageTagMutability": "MUTABLE",
+            "imageScanningConfiguration": {
+                "scanOnPush": false
+            },
+            "encryptionConfiguration": {
+                "encryptionType": "AES256"
+            }
+        }
+    ]
+}
