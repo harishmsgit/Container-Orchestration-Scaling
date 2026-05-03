@@ -2,11 +2,12 @@ FROM node:20-alpine AS base
 
 WORKDIR /app/streamingService
 
-COPY streamingService/package*.json ./
+COPY package*.json ./
 RUN npm ci --omit=dev
 
-COPY streamingService/. ./
+COPY . ./
 ENV NODE_ENV=production
 EXPOSE 3002
 
 CMD ["npm", "run", "start"]
+

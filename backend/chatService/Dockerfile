@@ -2,11 +2,12 @@ FROM node:20-alpine AS base
 
 WORKDIR /app/chatService
 
-COPY chatService/package*.json ./
+COPY package*.json ./
 RUN npm ci --omit=dev
 
-COPY chatService/. ./
+COPY . ./
 ENV NODE_ENV=production
 EXPOSE 3004
 
 CMD ["npm", "run", "start"]
+

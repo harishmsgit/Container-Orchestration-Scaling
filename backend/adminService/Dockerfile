@@ -2,10 +2,10 @@ FROM node:20-alpine AS base
 
 WORKDIR /app/adminService
 
-COPY adminService/package*.json ./
+COPY package*.json ./
 RUN npm ci --omit=dev
 
-COPY adminService/. ./
+COPY . ./
 ENV NODE_ENV=production
 EXPOSE 3003
 
