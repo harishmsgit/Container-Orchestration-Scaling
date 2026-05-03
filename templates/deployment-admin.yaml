@@ -1,19 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.services.admin.name }}
+  name: admin-service
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: {{ .Values.services.admin.name }}
+      app: admin-service
   template:
     metadata:
       labels:
-        app: {{ .Values.services.admin.name }}
+        app: admin-service
     spec:
       containers:
-        - name: {{ .Values.services.admin.name }}
-          image: "{{ .Values.image.repository }}/{{ .Values.services.admin.name }}:{{ .Values.image.tag }}"
+        - name: admin-service
+          image: "{{ .Values.adminService.image.repository }}:{{ .Values.adminService.image.tag }}"
+          imagePullPolicy: "{{ .Values.adminService.image.pullPolicy }}"
           ports:
-            - containerPort: {{ .Values.services.admin.port }}
+            - containerPort: 8080

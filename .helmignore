@@ -1,0 +1,6 @@
+.git/
+*.pack
+*.tgz
+*.tar.gz
+*.zip
+node_modules/
