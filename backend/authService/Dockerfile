@@ -1,6 +1,6 @@
 FROM node:20-alpine AS base
 
-WORKDIR /app
+WORKDIR /app/authService
 
 COPY package*.json ./
 RUN npm ci --omit=dev
