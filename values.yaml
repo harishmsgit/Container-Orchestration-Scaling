@@ -1,0 +1,21 @@
+image:
+  repository: 173554685967.dkr.ecr.ap-south-1.amazonaws.com
+  tag: latest
+  pullPolicy: Always
+
+services:
+  admin:
+    name: streamingapp-admin
+    port: 3003
+  auth:
+    name: streamingapp-auth
+    port: 3001
+  chat:
+    name: streamingapp-chat
+    port: 3004
+  streaming:
+    name: streamingapp-streaming
+    port: 3002
+  ui:
+    name: streamingapp-ui
+    port: 3000
