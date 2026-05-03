@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ui-service
+  name: {{ .Values.services.ui.name }}
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: ui-service
+      app: {{ .Values.services.ui.name }}
   template:
     metadata:
       labels:
-        app: ui-service
+        app: {{ .Values.services.ui.name }}
     spec:
       containers:
-        - name: ui-service
-          image: "{{ .Values.uiService.image.repository }}:{{ .Values.uiService.image.tag }}"
-          imagePullPolicy: "{{ .Values.uiService.image.pullPolicy }}"
+        - name: {{ .Values.services.ui.name }}
+          image: "{{ .Values.image.repository }}/{{ .Values.services.ui.name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 80
+            - containerPort: {{ .Values.services.ui.port }}

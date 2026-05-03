@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chat-service
+  name: {{ .Values.services.chat.name }}
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: chat-service
+      app: {{ .Values.services.chat.name }}
   template:
     metadata:
       labels:
-        app: chat-service
+        app: {{ .Values.services.chat.name }}
     spec:
       containers:
-        - name: chat-service
-          image: "{{ .Values.chatService.image.repository }}:{{ .Values.chatService.image.tag }}"
-          imagePullPolicy: "{{ .Values.chatService.image.pullPolicy }}"
+        - name: {{ .Values.services.chat.name }}
+          image: "{{ .Values.image.repository }}/{{ .Values.services.chat.name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 8080
+            - containerPort: {{ .Values.services.chat.port }}

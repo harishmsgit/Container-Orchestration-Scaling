@@ -1,5 +1,9 @@
 .git/
 *.pack
+*.mp4
+*.mp3
+*.avi
+*.mov
 *.tgz
 *.tar.gz
 *.zip

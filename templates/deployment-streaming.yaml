@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: streaming-service
+  name: {{ .Values.services.streaming.name }}
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: streaming-service
+      app: {{ .Values.services.streaming.name }}
   template:
     metadata:
       labels:
-        app: streaming-service
+        app: {{ .Values.services.streaming.name }}
     spec:
       containers:
-        - name: streaming-service
-          image: "{{ .Values.streamingService.image.repository }}:{{ .Values.streamingService.image.tag }}"
-          imagePullPolicy: "{{ .Values.streamingService.image.pullPolicy }}"
+        - name: {{ .Values.services.streaming.name }}
+          image: "{{ .Values.image.repository }}/{{ .Values.services.streaming.name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 8080
+            - containerPort: {{ .Values.services.streaming.port }}
