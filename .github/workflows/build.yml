@@ -39,7 +39,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         run: |
@@ -85,4 +85,8 @@ jobs:
             --build-arg REACT_APP_STREAMING_API_URL=${{ env.REACT_APP_STREAMING_API_URL }} \
             --build-arg REACT_APP_STREAMING_PUBLIC_URL=${{ env.REACT_APP_STREAMING_PUBLIC_URL }} \
             --build-arg REACT_APP_ADMIN_API_URL=${{ env.REACT_APP_ADMIN_API_URL }} \
-            --
+            --build-arg REACT_APP_CHAT_API_URL=${{ env.REACT_APP_CHAT_API_URL }} \
+            --build-arg REACT_APP_CHAT_SOCKET_URL=${{ env.REACT_APP_CHAT_SOCKET_URL }} \
+            -t streamingapp-ui:$IMAGE_TAG ./frontend
+          docker tag streamingapp-ui:$IMAGE_TAG $ECR_REGISTRY/streamingapp-ui:$IMAGE_TAG
+          docker push $ECR_REGISTRY/streamingapp-ui:$IMAGE_TAG
