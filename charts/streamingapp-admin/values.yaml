@@ -1,0 +1,11 @@
+image:
+  repository: 173554685967.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-admin
+  tag: latest
+  pullPolicy: Always
+
+service:
+  port: 3003
+
+env:
+  - name: MONGO_URI
+    value: mongodb://mongodb:27017/streamingapp

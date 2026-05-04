@@ -34,8 +34,7 @@ services:
 
   streaming:
     build:
-      context: ./backend
-      dockerfile: streamingService/Dockerfile
+      context: ./backend/streamingService
     restart: unless-stopped
     depends_on:
       mongo:
@@ -56,8 +55,7 @@ services:
 
   admin:
     build:
-      context: ./backend
-      dockerfile: adminService/Dockerfile
+      context: ./backend/adminService
     restart: unless-stopped
     depends_on:
       mongo:
@@ -77,8 +75,7 @@ services:
 
   chat:
     build:
-      context: ./backend
-      dockerfile: chatService/Dockerfile
+      context: ./backend/chatService
     restart: unless-stopped
     depends_on:
       mongo:
