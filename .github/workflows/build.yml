@@ -3,10 +3,33 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ap-south-1
+  ECR_REGISTRY: 173554685967.dkr.ecr.ap-south-1.amazonaws.com
+  IMAGE_TAG: ${{ github.sha }}
+
+  # Non-sensitive values from .env
+  CLIENT_URLS: http://localhost:3000
+  MONGO_DB: streamingapp
+  AUTH_PORT: 3001
+  STREAMING_PORT: 3002
+  ADMIN_PORT: 3003
+  CHAT_PORT: 3004
+  STREAMING_PUBLIC_URL: http://localhost:3002
+  REACT_APP_AUTH_API_URL: http://localhost:3001/api
+  REACT_APP_STREAMING_API_URL: http://localhost:3002/api
+  REACT_APP_STREAMING_PUBLIC_URL: http://localhost:3002
+  REACT_APP_ADMIN_API_URL: http://localhost:3003/api/admin
+  REACT_APP_CHAT_API_URL: http://localhost:3004/api/chat
+  REACT_APP_CHAT_SOCKET_URL: http://localhost:3004
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
@@ -16,39 +39,50 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-south-1
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
         run: |
-          aws ecr get-login-password --region ap-south-1 \
-            | docker login --username AWS --password-stdin 173554685967.dkr.ecr.ap-south-1.amazonaws.com
+          aws ecr get-login-password --region $AWS_REGION \
+            | docker login --username AWS --password-stdin $ECR_REGISTRY
 
       - name: Build and push Admin Service
         run: |
-          docker build -t streamingapp-admin:latest ./backend/adminService
-          docker tag streamingapp-admin:latest 173554685967.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-admin:latest
-          docker push 173554685967.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-admin:latest
+          docker build \
+            --build-arg MONGO_DB=${{ env.MONGO_DB }} \
+            -t streamingapp-admin:$IMAGE_TAG ./backend/adminService
+          docker tag streamingapp-admin:$IMAGE_TAG $ECR_REGISTRY/streamingapp-admin:$IMAGE_TAG
+          docker push $ECR_REGISTRY/streamingapp-admin:$IMAGE_TAG
 
       - name: Build and push Auth Service
         run: |
-          docker build -t streamingapp-auth:latest ./backend/authService
-          docker tag streamingapp-auth:latest 173554685967.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-auth:latest
-          docker push 173554685967.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-auth:latest
+          docker build \
+            --build-arg MONGO_DB=${{ env.MONGO_DB }} \
+            -t streamingapp-auth:$IMAGE_TAG ./backend/authService
+          docker tag streamingapp-auth:$IMAGE_TAG $ECR_REGISTRY/streamingapp-auth:$IMAGE_TAG
+          docker push $ECR_REGISTRY/streamingapp-auth:$IMAGE_TAG
 
       - name: Build and push Chat Service
         run: |
-          docker build -t streamingapp-chat:latest ./backend/chatService
-          docker tag streamingapp-chat:latest 173554685967.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-chat:latest
-          docker push 173554685967.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-chat:latest
+          docker build \
+            --build-arg MONGO_DB=${{ env.MONGO_DB }} \
+            -t streamingapp-chat:$IMAGE_TAG ./backend/chatService
+          docker tag streamingapp-chat:$IMAGE_TAG $ECR_REGISTRY/streamingapp-chat:$IMAGE_TAG
+          docker push $ECR_REGISTRY/streamingapp-chat:$IMAGE_TAG
 
       - name: Build and push Streaming Service
         run: |
-          docker build -t streamingapp-streaming:latest ./backend/streamingService
-          docker tag streamingapp-streaming:latest 173554685967.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-streaming:latest
-          docker push 173554685967.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-streaming:latest
+          docker build \
+            --build-arg MONGO_DB=${{ env.MONGO_DB }} \
+            -t streamingapp-streaming:$IMAGE_TAG ./backend/streamingService
+          docker tag streamingapp-streaming:$IMAGE_TAG $ECR_REGISTRY/streamingapp-streaming:$IMAGE_TAG
+          docker push $ECR_REGISTRY/streamingapp-streaming:$IMAGE_TAG
 
       - name: Build and push UI Service
         run: |
-          docker build -t streamingapp-ui:latest ./frontend
-          docker tag streamingapp-ui:latest 173554685967.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-ui:latest
-          docker push 173554685967.dkr.ecr.ap-south-1.amazonaws.com/streamingapp-ui:latest
+          docker build \
+            --build-arg REACT_APP_AUTH_API_URL=${{ env.REACT_APP_AUTH_API_URL }} \
+            --build-arg REACT_APP_STREAMING_API_URL=${{ env.REACT_APP_STREAMING_API_URL }} \
+            --build-arg REACT_APP_STREAMING_PUBLIC_URL=${{ env.REACT_APP_STREAMING_PUBLIC_URL }} \
+            --build-arg REACT_APP_ADMIN_API_URL=${{ env.REACT_APP_ADMIN_API_URL }} \
+            --
