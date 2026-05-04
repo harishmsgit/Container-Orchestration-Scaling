@@ -16,6 +16,9 @@ services:
   streaming:
     name: streamingapp-streaming
     port: 3002
+    env:
+      - name: MONGO_URI
+        value: mongodb://mongodb:27017/streamingapp
   ui:
     name: streamingapp-ui
     port: 3000

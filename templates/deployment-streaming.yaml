@@ -18,3 +18,8 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.services.streaming.port }}
+          env:
+            {{- range .Values.services.streaming.env }}
+            - name: {{ .name }}
+              value: {{ .value }}
+            {{- end }}
