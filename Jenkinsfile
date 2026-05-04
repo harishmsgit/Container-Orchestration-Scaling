@@ -57,24 +57,18 @@ pipeline {
         }
         stage('Push to ECR') {
             steps {
-                sh '''
-                aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+                // If Jenkins is outside AWS, use credentials binding
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                    sh '''
+                    aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
-                docker push $FRONTEND_REPO:latest
-                aws ecr list-images --repository-name streamingapp-ui --region $AWS_REGION
-
-                docker push $BACKEND_AUTH_REPO:latest
-                aws ecr list-images --repository-name streamingapp-auth --region $AWS_REGION
-
-                docker push $BACKEND_ADMIN_REPO:latest
-                aws ecr list-images --repository-name streamingapp-admin --region $AWS_REGION
-
-                docker push $BACKEND_CHAT_REPO:latest
-                aws ecr list-images --repository-name streamingapp-chat --region $AWS_REGION
-
-                docker push $BACKEND_STREAMING_REPO:latest
-                aws ecr list-images --repository-name streamingapp-streaming --region $AWS_REGION
-                '''
+                    docker push $FRONTEND_REPO:latest
+                    docker push $BACKEND_AUTH_REPO:latest
+                    docker push $BACKEND_ADMIN_REPO:latest
+                    docker push $BACKEND_CHAT_REPO:latest
+                    docker push $BACKEND_STREAMING_REPO:latest
+                    '''
+                }
             }
         }
     }
