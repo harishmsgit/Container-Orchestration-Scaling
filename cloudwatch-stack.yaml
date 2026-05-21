@@ -1,0 +1,192 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudWatch Logs + Metrics + SNS Alerts Stack with Alarms and Dashboard
+
+Resources:
+
+  # SNS Topic
+  LogAlertsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: CloudWatchLogAlerts
+
+  # Email Subscription
+  LogAlertsSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: email
+      Endpoint: senharish108@gmail.com   # <-- replace with your email
+      TopicArn: !Ref LogAlertsTopic
+
+  # Log Groups
+  SyslogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: ec2-syslog
+      RetentionInDays: 30
+
+  AuthlogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: ec2-authlog
+      RetentionInDays: 30
+
+  # IAM Role for Lambda
+  LambdaSNSRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: LambdaSNSRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaSNSPublishPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: sns:Publish
+                Resource: !Ref LogAlertsTopic
+
+  # Lambda Function
+  LogForwarderLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: CloudWatchLogsToSNS
+      Runtime: python3.9
+      Handler: index.lambda_handler
+      Role: !GetAtt LambdaSNSRole.Arn
+      Code:
+        ZipFile: |
+          import boto3, json
+          sns = boto3.client('sns')
+          topic_arn = "${LogAlertsTopic}"
+          def lambda_handler(event, context):
+              message = json.dumps(event)
+              sns.publish(TopicArn=topic_arn, Message=message)
+              return {"status": "ok"}
+
+  # Subscription Filter for Syslog
+  SyslogErrorFilter:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      LogGroupName: !Ref SyslogGroup
+      FilterName: ErrorFilter
+      FilterPattern: "ERROR"
+      DestinationArn: !GetAtt LogForwarderLambda.Arn
+
+  # CloudWatch Alarms (Metrics)
+  HighCPUAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: HighCPUAlarm
+      Namespace: CWAgent
+      MetricName: cpu_usage_user
+      Dimensions:
+        - Name: InstanceId
+          Value: i-0b94d178b9b44b6fa   # <-- replace with your instance ID
+      Statistic: Average
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 80
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref LogAlertsTopic
+
+  HighMemoryAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: HighMemoryAlarm
+      Namespace: CWAgent
+      MetricName: mem_used_percent
+      Dimensions:
+        - Name: InstanceId
+          Value: i-0b94d178b9b44b6fa
+      Statistic: Average
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 70
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref LogAlertsTopic
+
+  HighDiskAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: HighDiskAlarm
+      Namespace: CWAgent
+      MetricName: disk_used_percent
+      Dimensions:
+        - Name: InstanceId
+          Value: i-0b94d178b9b44b6fa
+      Statistic: Average
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 80
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref LogAlertsTopic
+
+  # CloudWatch Dashboard
+  MonitoringDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: EC2MonitoringDashboard
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            {
+              "type": "metric",
+              "x": 0, "y": 0, "width": 12, "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "CWAgent", "cpu_usage_user", "InstanceId", "${InstanceId}" ]
+                ],
+                "title": "CPU Usage (%)",
+                "period": 60,
+                "stat": "Average"
+              }
+            },
+            {
+              "type": "metric",
+              "x": 0, "y": 6, "width": 12, "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "CWAgent", "mem_used_percent", "InstanceId", "${InstanceId}" ]
+                ],
+                "title": "Memory Usage (%)",
+                "period": 60,
+                "stat": "Average"
+              }
+            },
+            {
+              "type": "metric",
+              "x": 0, "y": 12, "width": 12, "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "CWAgent", "disk_used_percent", "InstanceId", "${InstanceId}" ]
+                ],
+                "title": "Disk Usage (%)",
+                "period": 60,
+                "stat": "Average"
+              }
+            }
+          ]
+        }
+
+Parameters:
+  InstanceId:
+    Type: String
+    Default: i-0b94d178b9b44b6fa
+    Description: EC2 Instance ID to monitor
+
+Outputs:
+  SNSTopicArn:
+    Description: SNS Topic ARN for alerts
+    Value: !Ref LogAlertsTopic
+  DashboardName:
+    Description: CloudWatch Dashboard Name
+    Value: !Ref MonitoringDashboard
